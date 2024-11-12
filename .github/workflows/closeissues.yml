@@ -1,25 +1,29 @@
-name: Close Issues
+name: Close Issues on Comment
 
 on:
-  issues:
-    types: [labeled]
+  issue_comment:
+    types: [created]
 
 jobs:
-  close_issues_job:
+  close_issue_on_comment:
     runs-on: ubuntu-latest
     steps:
-      - name: Close issues with 'close' label
+      - name: Close issue if comment contains 'close'
         uses: actions/github-script@v6
         with:
           script: |
-            const label = context.payload.label.name;
+            const comment = context.payload.comment.body.toLowerCase();
             const issueNumber = context.payload.issue.number;
 
-            if (label === 'close') {
+            // Check if the comment includes the word "close"
+            if (comment.includes('close')) {
               await github.rest.issues.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issueNumber,
                 state: 'closed'
               });
+              console.log(`Closed issue #${issueNumber} based on comment: ${comment}`);
+            } else {
+              console.log(`Comment does not contain 'close'; action skipped.`);
             }
