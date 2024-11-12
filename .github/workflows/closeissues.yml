@@ -1,0 +1,25 @@
+name: Close Issues
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  close_issues_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close issues with 'close' label
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const label = context.payload.label.name;
+            const issueNumber = context.payload.issue.number;
+
+            if (label === 'close') {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                state: 'closed'
+              });
+            }
