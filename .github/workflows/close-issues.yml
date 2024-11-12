@@ -1,0 +1,16 @@
+name: Close Issues
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  close-issue:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Close the issue when the comment is "close"
+        if: ${{ github.event.comment.body == 'close' }}
+        uses: peter-evans/close-issue@v2
+        with:
+          issue-number: ${{ github.event.issue.number }}
